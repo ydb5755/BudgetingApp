@@ -7,7 +7,7 @@ import os
 import openpyxl
 import time
 
-def get_uploads_path():
+def get_uploads_path() -> str:
     path1 = 'C:/Users/Lenovo/Desktop/BudgetingApp/app/static/uploadable/'
     path2 = '/home/yisroel2/Desktop/budgetingApp/app/static/uploadable/'
     for p in [path1, path2]:
@@ -20,20 +20,19 @@ def get_uploads_path():
 def home():
     this_year = datetime.datetime.now().date().year
     this_month = datetime.datetime.now().date().month
-    # line_item_dates = db.session.query(select(LineItem.date).order_by(LineItem.date))
-    notes = db.session.execute(select(LineItem.note)).all()
+    
+    all_line_items = db.session.execute(select(LineItem)).all()
     vendors = db.session.execute(select(Vendor)).all()
     budget_categories = db.session.execute(select(BudgetCategory)).all()
     files = os.listdir(get_uploads_path())
     return render_template('index.html', 
                            files=files,
-                           notes=notes,
                            vendors=vendors,
-                           budget_categories=budget_categories)
+                           budget_categories=budget_categories,
+                           all_line_items=all_line_items)
 
 @app.route('/upload_file/<filename>')
-def upload_file(filename):
-
+def upload_file(filename:str):
     file_path = get_uploads_path() + filename
     xl = openpyxl.load_workbook(file_path, read_only=True)
     wb = xl.worksheets[0]
@@ -63,12 +62,12 @@ def upload_file(filename):
             )
             db.session.add(vendor)
             db.session.commit()
-
+        vendor_id = db.session.execute(select(Vendor.id).where(Vendor.name==row[columns['Vendor']])).scalar()
         line_item = LineItem(
             parent_line_item_id=None,
             amount=amount,
             currency_type='shekel',
-            vendor_id=None,
+            vendor_id=vendor_id,
             date=date,
             confirmation_code=row[columns['Confirmation Code']],
             note=row[columns['Note']]
