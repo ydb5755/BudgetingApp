@@ -1,7 +1,7 @@
 import datetime
 import openpyxl
 import time
-from sqlalchemy import create_engine, MetaData, Table
+from sqlalchemy import create_engine, MetaData, Table, select
 import os
 
 def engineer():
@@ -23,6 +23,9 @@ def playground():
     line_item_table = Table("line_item", metadata_obj, autoload_with=engine)
     budget_category_table = Table("budget_category", metadata_obj, autoload_with=engine)
     vendor_table = Table("vendor", metadata_obj, autoload_with=engine)
+
+    with engine.connect() as conn:
+        lis = conn.execute(select(line_item_table))
 
     # xl = openpyxl.load_workbook('C:/Users/Lenovo/Desktop/BudgetingApp/app/static/uploadable/Bulk_Line_Item_Upload.xlsx',read_only=True)
     # wb = xl.worksheets[0]
