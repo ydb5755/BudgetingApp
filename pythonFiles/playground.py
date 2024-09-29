@@ -6,10 +6,10 @@ import os
 
 def engineer():
     path1 = 'C:/Users/Lenovo/Desktop/BudgetingApp/instance/site.db'
-    # path2 = ''
+    path2 = '/home/yisroel2/Desktop/budgetingApp/instance/site.db'
     # path3 = ''
 
-    for p in [path1]:
+    for p in [path1, path2]:
         if os.path.exists(p):
             path = p
             break

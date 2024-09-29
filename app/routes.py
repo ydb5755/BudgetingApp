@@ -7,6 +7,14 @@ import os
 import openpyxl
 import time
 
+def get_uploads_path():
+    path1 = 'C:/Users/Lenovo/Desktop/BudgetingApp/app/static/uploadable/'
+    path2 = '/home/yisroel2/Desktop/budgetingApp/app/static/uploadable/'
+    for p in [path1, path2]:
+        if os.path.exists(p):
+            path = p
+            break
+    return path
 
 @app.route('/')
 def home():
@@ -16,7 +24,7 @@ def home():
     notes = db.session.execute(select(LineItem.note)).all()
     vendors = db.session.execute(select(Vendor)).all()
     budget_categories = db.session.execute(select(BudgetCategory)).all()
-    files = os.listdir('C:/Users/Lenovo/Desktop/BudgetingApp/app/static/uploadable')
+    files = os.listdir(get_uploads_path())
     return render_template('index.html', 
                            files=files,
                            notes=notes,
@@ -26,7 +34,7 @@ def home():
 @app.route('/upload_file/<filename>')
 def upload_file(filename):
 
-    file_path = 'C:/Users/Lenovo/Desktop/BudgetingApp/app/static/uploadable/' + filename
+    file_path = get_uploads_path() + filename
     xl = openpyxl.load_workbook(file_path, read_only=True)
     wb = xl.worksheets[0]
     
