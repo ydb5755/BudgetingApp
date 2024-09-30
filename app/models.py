@@ -12,6 +12,9 @@ class Vendor(db.Model):
     
     def get_line_items(self):
         return db.session.execute(select(LineItem).where(LineItem.vendor_id==self.id)).all()
+    
+    def __repr__(self) -> str:
+        return f'{self.name}'
 
 class BudgetCategory(db.Model):
     __tablename__ = 'budget_category'
