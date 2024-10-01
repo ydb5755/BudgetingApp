@@ -6,6 +6,7 @@ import datetime
 import os
 import openpyxl
 import time
+import calendar
 
 def get_uploads_path() -> str:
     path1 = 'C:/Users/Lenovo/Desktop/BudgetingApp/app/static/uploadable/'
@@ -18,10 +19,25 @@ def get_uploads_path() -> str:
 
 @app.route('/')
 def home():
-    this_year = datetime.datetime.now().date().year
-    this_month = datetime.datetime.now().date().month
-    
-    all_line_items = db.session.execute(select(LineItem)).all()
+    # Get the current date
+    now = datetime.datetime.now()
+
+    # Get the first day of the current month and subtract one day to get the last day of the previous month
+    first_day_of_current_month = datetime.datetime(now.year, now.month, 1)
+    last_day_of_previous_month = first_day_of_current_month - datetime.timedelta(days=1)
+
+    # Get the first day of the previous month
+    first_day_of_previous_month = datetime.datetime(last_day_of_previous_month.year, last_day_of_previous_month.month, 1)
+
+    # Convert both datetime objects to timestamps
+    first_day_timestamp = first_day_of_previous_month.timestamp()
+    last_day_timestamp = datetime.datetime(last_day_of_previous_month.year, last_day_of_previous_month.month, last_day_of_previous_month.day, 23, 59, 59).timestamp()
+
+    all_line_items = db.session.execute(select(LineItem).where(LineItem.date > first_day_timestamp, LineItem.date < last_day_timestamp)).all()
+    for li in all_line_items:
+        dt_object = datetime.datetime.fromtimestamp(li[0].date)
+        date_string = dt_object.strftime('%Y-%m-%d')
+        li[0].date = date_string
     vendors = db.session.execute(select(Vendor)).all()
     budget_categories = db.session.execute(select(BudgetCategory)).all()
     files = os.listdir(get_uploads_path())

@@ -52,10 +52,12 @@
                                 <th scope="col">Parent LineItem ID</th>
                                 <th scope="col">Amount</th>
                                 <th scope="col">Currency Type</th>
-                                <th scope="col">Vendor ID</th>
+                                <th scope="col">Vendor</th>
                                 <th scope="col">Date</th>
                                 <th scope="col">Confirmation Code</th>
                                 <th scope="col">Note</th>
+                                <th scope="col">Reassign Vendor</th>
+                                <th scope="col">Split Line?</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -65,10 +67,12 @@
                                     <th scope="row">{{li[0].parent_line_item_id}}</th>
                                     <th scope="row">{{li[0].amount}}</th>
                                     <th scope="row">{{li[0].currency_type}}</th>
-                                    <th scope="row">{{li[0].get_vendor()[0]}}</th>
+                                    <th scope="row" id="vendor-line-{{li[0].id}}">{{li[0].get_vendor()[0]}}</th>
                                     <th scope="row">{{li[0].date}}</th>
                                     <th scope="row">{{li[0].confirmation_code}}</th>
                                     <th scope="row">{{li[0].note}}</th>
+                                    <th scope="row"><button id="{{li[0].id}}" class="btn btn-primary reassign-button">Click to reassign vendor</button></th>
+                                    <th scope="row"><a class="btn btn-primary" href="#">Click to split line</a></th>
                                 </tr>
                             {% endfor %}
                         </tbody>
