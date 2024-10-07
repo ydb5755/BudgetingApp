@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Budget Categories{% endblock title %}
+
+{% block content %}
+<main>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    Vendors
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vendor in vendors %}
+                                <tr>
+                                    <th scope="row">{{vendor[0].id}}</th>
+                                    <th scope="row">{{vendor[0].name}}</th>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}

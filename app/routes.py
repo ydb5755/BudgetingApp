@@ -17,6 +17,20 @@ def get_uploads_path() -> str:
             break
     return path
 
+@app.route('/budget_categories')
+def budget_categories():
+    budget_categories = db.session.execute(select(BudgetCategory)).all()
+    return render_template('budget_categories.html',
+                           budget_categories=budget_categories)
+
+
+@app.route('/vendors')
+def vendors():
+    vendors = db.session.execute(select(Vendor)).all()
+    return render_template('vendors.html',
+                           vendors=vendors)
+
+
 @app.route('/')
 def home():
     # Get the current date
@@ -38,13 +52,9 @@ def home():
         dt_object = datetime.datetime.fromtimestamp(li[0].date)
         date_string = dt_object.strftime('%Y-%m-%d')
         li[0].date = date_string
-    vendors = db.session.execute(select(Vendor)).all()
-    budget_categories = db.session.execute(select(BudgetCategory)).all()
     files = os.listdir(get_uploads_path())
     return render_template('index.html', 
                            files=files,
-                           vendors=vendors,
-                           budget_categories=budget_categories,
                            all_line_items=all_line_items)
 
 @app.route('/upload_file/<filename>')

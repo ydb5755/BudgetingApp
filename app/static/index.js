@@ -36,6 +36,7 @@ function startEditMode(id){
     inputElem.value = placeholderText;
     inputElem.id = `vendor-input-${id}`
     vendor.appendChild(inputElem);
+    inputElem.focus()
 }
 
 document.addEventListener("DOMContentLoaded", (event) => {

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Budget Categories{% endblock title %}
+
+{% block content %}
+<main>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                Budget Categories
+            </div>
+            <div class="card-body">
+
+                <form action="{{ url_for('add_budget_category') }}" method="POST">
+                    <div class="mb-3">
+                        <label for="categoryName" class="form-label">Add Budget Category</label>
+                        <input type="text" class="form-control" id="categoryName" name="category_name" placeholder="Enter category name" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+                <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bc in budget_categories %}
+                            <tr id="{{bc[0].id}}-row">
+                                <th scope="row">{{bc[0].id}}</th>
+                                <th scope="row">{{bc[0].name}}</th>
+                                <th scope="row"><button class="btn btn-danger del-button" id="{{bc[0].id}}">Delete</button></th>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}
