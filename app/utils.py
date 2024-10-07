@@ -7,11 +7,6 @@ def get_month_timestamps(month:int, year:int) -> tuple[float, float]:
     # Get the first day of the requested month and subtract one day to get the last day of the previous month
     first_day_of_requested_month = datetime.datetime(year, month, 1)
     last_day_of_requested_month = first_day_of_requested_month + datetime.timedelta(days=calendar.monthrange(year, month)[1] - 1) 
-    print(calendar.monthrange(year, month)[1])
-
-
-    # # Get the first day of the previous month
-    # first_day_of_previous_month = datetime.datetime(last_day_of_requested_month.year, last_day_of_requested_month.month, 1)
 
     # Convert both datetime objects to timestamps
     first_day_timestamp = first_day_of_requested_month.timestamp()
