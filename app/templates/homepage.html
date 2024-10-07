@@ -57,7 +57,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for li in all_line_items %}
+                            {% for li in last_month_lines %}
                                 <tr id="{{li[0].id}}-row">
                                     <th scope="row">{{li[0].id}}</th>
                                     <th scope="row">{{li[0].parent_line_item_id}}</th>
@@ -78,4 +78,5 @@
         </div>
     </div>
 </main>
+<script src="{{url_for('.static', filename='homepage.js')}}"></script>
 {% endblock content %}
