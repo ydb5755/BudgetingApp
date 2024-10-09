@@ -1,4 +1,7 @@
-const reassignButtons = document.getElementsByClassName('reassign-button');
+const monthSelector = document.getElementById('month-selector');
+const tableBody = document.getElementById('table-body');
+var reassignButtons = document.getElementsByClassName('reassign-button');
+
 
 function startEditMode(id){
     for(let i = 0; i < reassignButtons.length; i++){
@@ -33,10 +36,46 @@ function startEditMode(id){
     inputElem.focus()
 }
 
-document.addEventListener("DOMContentLoaded", (event) => {
+async function displayMonthLineItems(dateString){
+    const [month, year] = dateString.split(' ');
+    var result = await fetch(`/get_month_line_items/${month}/${year}`, {method:'POST'});
+    var data = await result.json();
+    tableBody.innerHTML = ''
+    data.forEach(li => {
+        const row = `
+            <tr id="${li.id}-row">
+                <th scope="row">${li.id}</th>
+                <th scope="row">${li.parent_line_item_id}</th>
+                <th scope="row">${li.amount}</th>
+                <th scope="row">${li.currency_type}</th>
+                <th scope="row" id="vendor-line-${li.id}">${li.vendor}</th>
+                <th scope="row">${li.date}</th>
+                <th scope="row">${li.confirmation_code}</th>
+                <th scope="row">${li.note}</th>
+                <th scope="row"><button id="${li.id}" class="btn btn-primary reassign-button">Click to reassign vendor</button></th>
+                <th scope="row"><a class="btn btn-primary" href="#">Click to split line</a></th>
+            </tr>
+        `;
+
+        // Insert the row into the table body
+        tableBody.insertAdjacentHTML('beforeend', row);
+
+    });
+    addListenersToReassignButtons();
+}
+
+function addListenersToReassignButtons() {
+    reassignButtons = document.getElementsByClassName('reassign-button');
     for(let i = 0; i < reassignButtons.length; i++){
         reassignButtons[i].addEventListener('click', e => {
-            startEditMode(parseInt(e.target.id))
+            startEditMode(parseInt(e.target.id));
         })
     }
+}
+
+document.addEventListener("DOMContentLoaded", (event) => {
+    displayMonthLineItems(monthSelector.value);
+    monthSelector.addEventListener('change', (e) => {
+        displayMonthLineItems(e.target.value);
+    })
   });
