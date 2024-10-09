@@ -23,6 +23,8 @@
                                 <tr>
                                     <th scope="col">ID</th>
                                     <th scope="col">Name</th>
+                                    <th scope="col">Budget Category</th>
+                                    <th scope="col">Change Budget Category</th>
                                     <th scope="col">Delete</th>
                                 </tr>
                             </thead>
@@ -31,6 +33,8 @@
                                     <tr id="{{vendor[0].id}}-row">
                                         <th scope="row">{{vendor[0].id}}</th>
                                         <th scope="row">{{vendor[0].name}}</th>
+                                        <th scope="row" id="bc-line-{{vendor[0].id}}">{{vendor[0].get_budget_category().name}}</th>
+                                        <th scope="row"><button id="{{vendor[0].id}}" class="btn btn-primary reassign-button">Click to reassign budget category</button></th>
                                         <th scope="row"><button class="btn btn-danger del-button" id="{{vendor[0].id}}">Delete</button></th>
                                     </tr>
                                 {% endfor %}
