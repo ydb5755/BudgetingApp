@@ -1,7 +1,7 @@
 import datetime
 import openpyxl
 import time
-from sqlalchemy import create_engine, MetaData, Table, select
+from sqlalchemy import create_engine, MetaData, Table, select, distinct, extract
 import os
 
 def engineer():
@@ -25,46 +25,16 @@ def playground():
     vendor_table = Table("vendor", metadata_obj, autoload_with=engine)
 
     with engine.connect() as conn:
-        lis = conn.execute(select(line_item_table))
 
-    # xl = openpyxl.load_workbook('C:/Users/Lenovo/Desktop/BudgetingApp/app/static/uploadable/Bulk_Line_Item_Upload.xlsx',read_only=True)
-    # wb = xl.worksheets[0]
-    # items_to_add = []
-    # for line, row in enumerate(wb.rows):
-    #     row = [x.value for x in row]
-    #     if line == 0:
-    #         columns = {x: i for i,x in enumerate(row)}
-    #         continue
-    #     if row[columns['Charge']]:
-    #         amount=row[columns['Charge']] * -1
-    #     else:
-    #         amount=row[columns['Deposit']]
-    #     date = row[0]
-    #     date = time.mktime(date.timetuple())
-    #     line_item = {
-    #         'parent_line_item_id':None,
-    #         'amount':amount,
-    #         'currency_type':'shekel',
-    #         'vendor_id':None,
-    #         'date':date,
-    #         'confirmation_code':row[columns['Confirmation Code']],
-    #         'note':row[columns['Note']]
-    #     }
-    #     items_to_add.append(line_item)
-    # print(len(items_to_add))
-    # print(items_to_add[51])
-
-    # month = datetime.datetime.now().date().month
-    # year = datetime.datetime.now().date().year
-    # print(month)
-    # print(year)
-    # print(type(month))
-    # print(type(year))
-    # print(datetime.datetime.now(datetime.timezone.utc).timestamp())
-    
-    # today = datetime.datetime.today().date()
-    # today = time.mktime(today.timetuple())
-    # print(today)
+        x = conn.execute(select(line_item_table.c.date)).all()
+        print(x)
+        # lis = [datetime.datetime.fromtimestamp(s) for s in conn.execute(select(distinct(line_item_table.c.date))).scalars().all()]
+        # month_year = {(s.month, s.year) for s in lis}
+        
+        # month_year = [datetime.datetime(year=x[1], month=x[0], day=1) for x in month_year]
+        # month_year.sort()
+        # return [x.strftime("%b %Y") for x in month_year]
 
 if __name__ == '__main__':
-    playground()
+    # print(playground())
+    print(datetime.datetime.strptime('Aug', "%b").month)
