@@ -10,27 +10,37 @@
                     Vendors
                 </div>
                 <div class="card-body">
+                    <form action="{{ url_for('add_vendor') }}" method="POST">
+                        <div class="mb-3">
+                            <label for="vendorName" class="form-label">Add Vendor</label>
+                            <input type="text" class="form-control" id="vendorName" name="vendor_name" placeholder="Enter vendor name" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
                     <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th scope="col">ID</th>
-                                <th scope="col">Name</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for vendor in vendors %}
+                        <table class="table table-bordered">
+                            <thead>
                                 <tr>
-                                    <th scope="row">{{vendor[0].id}}</th>
-                                    <th scope="row">{{vendor[0].name}}</th>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Delete</th>
                                 </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {% for vendor in vendors %}
+                                    <tr id="{{vendor[0].id}}-row">
+                                        <th scope="row">{{vendor[0].id}}</th>
+                                        <th scope="row">{{vendor[0].name}}</th>
+                                        <th scope="row"><button class="btn btn-danger del-button" id="{{vendor[0].id}}">Delete</button></th>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </main>
+<script src="{{url_for('.static', filename='vendors.js')}}"></script>
 {% endblock content %}
