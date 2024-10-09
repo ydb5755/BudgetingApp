@@ -18,24 +18,24 @@
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
                 <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th scope="col">ID</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Delete</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for bc in budget_categories %}
-                            <tr id="{{bc[0].id}}-row">
-                                <th scope="row">{{bc[0].id}}</th>
-                                <th scope="row">{{bc[0].name}}</th>
-                                <th scope="row"><button class="btn btn-danger del-button" id="{{bc[0].id}}">Delete</button></th>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Delete</th>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {% for bc in budget_categories %}
+                                <tr id="{{bc[0].id}}-row">
+                                    <th scope="row">{{bc[0].id}}</th>
+                                    <th scope="row">{{bc[0].name}}</th>
+                                    <th scope="row"><button class="btn btn-danger del-button" id="{{bc[0].id}}">Delete</button></th>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
