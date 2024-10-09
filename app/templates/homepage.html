@@ -38,6 +38,14 @@
         <div class="card">
             <div class="card-header bg-primary text-white">
                 Line Items
+                <br/>
+                <label for="month-selector">Choose a month:</label>
+
+                <select name="month-selector" id="month-selector">
+                    {% for month in all_months %}
+                        <option value="{{month}}">{{month}}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -56,21 +64,8 @@
                                 <th scope="col">Split Line?</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {% for li in last_month_lines %}
-                                <tr id="{{li[0].id}}-row">
-                                    <th scope="row">{{li[0].id}}</th>
-                                    <th scope="row">{{li[0].parent_line_item_id}}</th>
-                                    <th scope="row">{{li[0].amount}}</th>
-                                    <th scope="row">{{li[0].currency_type}}</th>
-                                    <th scope="row" id="vendor-line-{{li[0].id}}">{{li[0].get_vendor()[0]}}</th>
-                                    <th scope="row">{{li[0].date}}</th>
-                                    <th scope="row">{{li[0].confirmation_code}}</th>
-                                    <th scope="row">{{li[0].note}}</th>
-                                    <th scope="row"><button id="{{li[0].id}}" class="btn btn-primary reassign-button">Click to reassign vendor</button></th>
-                                    <th scope="row"><a class="btn btn-primary" href="#">Click to split line</a></th>
-                                </tr>
-                            {% endfor %}
+                        <tbody id="table-body">
+                            <tr><td>Loading...</td></tr>
                         </tbody>
                     </table>
                 </div>
