@@ -7,6 +7,11 @@ async function deleteVendor(id){
     document.getElementById(`${id}-row`).remove();
 }
 
+async function updateBudgetCategory(id, updatedName){
+    var result = await fetch(`/delete_vendor/${id}/${updatedName}`, {method:'POST'});
+    var data = await result.json();
+}
+
 function startEditMode(id){
     for(let i = 0; i < reassignButtons.length; i++){
         reassignButtons[i].disabled = true;
@@ -31,10 +36,10 @@ function startEditMode(id){
     document.addEventListener('keydown', handleKeydown);
 
     const vendor = document.getElementById(`bc-line-${id}`);
-    console.log(id)
     var placeholderText = vendor.innerText
     vendor.innerText = ''
     var inputElem = document.createElement("input");
+    inputElem.className = "form-control";
     inputElem.value = placeholderText;
     inputElem.id = `bc-input-${id}`
     vendor.appendChild(inputElem);

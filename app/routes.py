@@ -153,5 +153,9 @@ def get_month_line_items(month:str, year:str):
         line_item_list.append(line_item_data)
     return jsonify(line_item_list)
 
+@app.route('/update_vendors_budget_category/<vendor_id>/<updated_budget_name>', methods=['POST'])
+def update_vendors_budget_category(vendor_id, updated_budget_name):
+    db.session.execute(update(Vendor).values().where(id=vendor_id))
+    return {"status":'success'}
 
     
