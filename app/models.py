@@ -1,5 +1,6 @@
 from app import db
 from sqlalchemy import Column, INTEGER, String, select
+import datetime
 
 class Vendor(db.Model):
     __tablename__ = 'vendor'
@@ -43,10 +44,14 @@ class LineItem(db.Model):
     note                = Column('note', String(), nullable=True)
 
     def get_parent_line(self):
-        return db.session.execute(select(LineItem).where(LineItem.id==self.parent_line_item_id)).first()
+        return db.session.execute(select(LineItem).where(LineItem.id==self.parent_line_item_id)).scalar()
     
     def get_children_lines(self):
         return db.session.execute(select(LineItem).where(LineItem.parent_line_item_id==self.id)).all()
 
     def get_vendor(self):
-        return db.session.execute(select(Vendor).where(Vendor.id==self.vendor_id)).first()
+        return db.session.execute(select(Vendor).where(Vendor.id==self.vendor_id)).scalar()
+    
+    def display_date(self):
+        dt_object = datetime.datetime.fromtimestamp(self.date)
+        return dt_object.strftime('%Y-%m-%d')
