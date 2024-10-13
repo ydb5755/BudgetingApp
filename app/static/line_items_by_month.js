@@ -53,7 +53,7 @@ async function displayMonthLineItems(dateString){
                 <th scope="row">${li.confirmation_code}</th>
                 <th scope="row">${li.note || ''}</th>
                 <th scope="row"><button id="${li.id}" class="btn btn-primary reassign-button">Click to reassign vendor</button></th>
-                <th scope="row"><a class="btn btn-primary" href="#">Click to split line</a></th>
+                <th scope="row"><a class="btn btn-primary" href="/split_line/${li.id}">Click to split line</a></th>
             </tr>
         `;
 
