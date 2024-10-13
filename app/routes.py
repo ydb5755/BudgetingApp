@@ -23,10 +23,10 @@ def vendors():
 
 
 @app.route('/')
-def home():
+def line_items_by_month():
     all_months = get_all_months()
     files = os.listdir(get_uploads_path())
-    return render_template('homepage.html', 
+    return render_template('line_items_by_month.html', 
                            files=files,
                            all_months=all_months)
 
@@ -165,7 +165,7 @@ def update_vendors_budget_category(vendor_id, updated_budget_name):
             name=updated_budget_name
         ))
         db.session.commit()
-        
+
         budget_cat = db.session.execute(select(BudgetCategory).where(BudgetCategory.name == updated_budget_name)).scalar()
         db.session.execute(update(Vendor).values(bc_id=budget_cat.id).where(Vendor.id==vendor_id))
         db.session.commit()
