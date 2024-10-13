@@ -155,7 +155,22 @@ def get_month_line_items(month:str, year:str):
 
 @app.route('/update_vendors_budget_category/<vendor_id>/<updated_budget_name>', methods=['POST'])
 def update_vendors_budget_category(vendor_id, updated_budget_name):
-    db.session.execute(update(Vendor).values().where(id=vendor_id))
+    budget_cat = db.session.execute(select(BudgetCategory).where(BudgetCategory.name == updated_budget_name)).scalar()
+    vendor = db.session.execute(select(Vendor).where(Vendor.id ==vendor_id)).all()
+    if budget_cat:
+        db.session.execute(update(Vendor).values(bc_id=budget_cat.id).where(Vendor.id==vendor_id))
+        db.session.commit()
+    else:
+        db.session.add(BudgetCategory(
+            name=updated_budget_name
+        ))
+        db.session.commit()
+        
+        budget_cat = db.session.execute(select(BudgetCategory).where(BudgetCategory.name == updated_budget_name)).scalar()
+        db.session.execute(update(Vendor).values(bc_id=budget_cat.id).where(Vendor.id==vendor_id))
+        db.session.commit()
+
+
     return {"status":'success'}
 
     

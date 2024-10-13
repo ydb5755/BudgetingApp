@@ -12,12 +12,14 @@ async function updateBudgetCategory(id, updatedName){
     var data = await result.json();
 }
 
-function startEditMode(id){
+
+
+async function startEditMode(id){
     for(let i = 0; i < reassignButtons.length; i++){
         reassignButtons[i].disabled = true;
     }
 
-    const handleKeydown = (e) => {
+    const handleKeydown = async (e) => {
         if (e.key === 'Enter') {
             document.removeEventListener('keydown', handleKeydown);
             const vendor = document.getElementById(`bc-line-${id}`);
@@ -26,7 +28,8 @@ function startEditMode(id){
             if (vendorInput.parentNode) {
                 vendorInput.parentNode.removeChild(vendorInput);
             }
-            
+            var result = await fetch(`/update_vendors_budget_category/${id}/${vendor.innerText}`, {method:'POST'});
+            var data = await result.json();
             for(let i = 0; i < reassignButtons.length; i++){
                 reassignButtons[i].disabled = false;
             }
@@ -46,8 +49,7 @@ function startEditMode(id){
     inputElem.focus()
 }
 
-
-document.addEventListener("DOMContentLoaded", (event) => {
+document.addEventListener("DOMContentLoaded", () => {
     for(let i = 0; i < delButtons.length; i++){
         delButtons[i].addEventListener('click', e => {
             deleteVendor(parseInt(e.target.id));
