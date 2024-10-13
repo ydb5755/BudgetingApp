@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Split Line{% endblock title %}
+
+{% block content %}
+
+<main>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                Split Line
+            </div>
+            <!-- Display Details Section -->
+            <div class="card-body">
+                <h5 class="card-title">Details</h5>
+                <div class="table-responsive">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <th scope="row">Total Amount:</th>
+                                <td>{{ li.amount }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Vendor:</th>
+                                <td>{{ li.get_vendor().name }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Date:</th>
+                                <td>{{ li.display_date() }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('split_line_endpoint') }}" method="POST">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <tbody id="table-body">
+                                <tr>
+                                    <td><input type="text" class="form-control" name="Amount-1" placeholder="Amount"></td>
+                                    <td><input type="text" class="form-control" name="Vendor-1" placeholder="Vendor"></td>
+                                    <td><input type="text" class="form-control" name="Confirmation Code-1" placeholder="Confirmation Code"></td>
+                                    <td><input type="text" class="form-control" name="Note-1" placeholder="Note"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button type="button" class="btn btn-primary" id="add-line-button">Add Another Line?</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="{{url_for('.static', filename='split_line.js')}}"></script>
+</main>
+{% endblock content %}
