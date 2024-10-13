@@ -8,7 +8,7 @@ class Vendor(db.Model):
     bc_id         = Column('bc_id', INTEGER(), nullable=True)
 
     def get_budget_category(self):
-        return db.session.execute(select(BudgetCategory).where(BudgetCategory.id==self.bc_id)).first()
+        return db.session.execute(select(BudgetCategory).where(BudgetCategory.id==self.bc_id)).scalar()
     
     def get_line_items(self):
         return db.session.execute(select(LineItem).where(LineItem.vendor_id==self.id)).all()
