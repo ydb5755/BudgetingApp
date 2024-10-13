@@ -8,6 +8,10 @@ import os
 import openpyxl
 import time
 
+@app.route('/')
+def base_url():
+    return redirect(url_for('line_items_by_month'))
+
 @app.route('/budget_categories')
 def budget_categories():
     budget_categories = db.session.execute(select(BudgetCategory)).all()
@@ -21,8 +25,13 @@ def vendors():
     return render_template('vendors.html',
                            vendors=vendors)
 
+@app.route('/monthly_budget_summary')
+def monthly_budget_summary():
+    all_months = get_all_months()
+    return render_template('monthly_budget_summary.html',
+                           all_months=all_months)
 
-@app.route('/')
+@app.route('/line_items_by_month')
 def line_items_by_month():
     all_months = get_all_months()
     files = os.listdir(get_uploads_path())
@@ -81,11 +90,11 @@ def upload_file(filename:str):
     # os.remove(file_path)
     return redirect(url_for('home'))
 
-@app.route('/view_month/<year>/<month>')
-def view_month(year, month):
-    return render_template('view_month.html',
-                           month=month,
-                           year=year)
+@app.route('/split_line/<line_item_id>')
+def split_line(line_item_id):
+    li = db.session.execute(select(LineItem).where(LineItem.id == line_item_id)).scalar()
+    return render_template('split_line.html',
+                           li=li)
 
 
 
@@ -133,20 +142,16 @@ def get_month_line_items(month:str, year:str):
     year = int(year)
     month_int = datetime.datetime.strptime(month, "%b").month
     first_day_timestamp, last_day_timestamp = get_month_timestamps(month_int, year)
-    month_line_items = db.session.execute(select(LineItem).where(LineItem.date > first_day_timestamp, LineItem.date < last_day_timestamp)).all()
+    month_line_items = db.session.execute(select(LineItem).where(LineItem.date > first_day_timestamp, LineItem.date < last_day_timestamp)).scalars().all()
     line_item_list = []
     for li in month_line_items:
-        li = li[0]
-        dt_object = datetime.datetime.fromtimestamp(li.date)
-        date_string = dt_object.strftime('%Y-%m-%d')
-        
         line_item_data = {
             'id':li.id,
             'parent_line_item_id':li.parent_line_item_id,
             'amount':li.amount,
             'currency_type':li.currency_type,
-            'vendor':li.get_vendor()[0].name,
-            'date':date_string,
+            'vendor':li.get_vendor().name,
+            'date':li.display_date(),
             'confirmation_code':li.confirmation_code,
             'note':li.note
         }
@@ -174,3 +179,9 @@ def update_vendors_budget_category(vendor_id, updated_budget_name):
     return {"status":'success'}
 
     
+@app.route('/split_line_endpoint', methods=['POST'])
+def split_line_endpoint():
+    if request.method == 'POST':
+        for k, v in request.form.items():
+            print(f'{k} : {v}')
+        return redirect(url_for('line_items_by_month'))
