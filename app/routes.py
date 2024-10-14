@@ -2,7 +2,7 @@ from app import app, db
 from flask import render_template, redirect, url_for, request, jsonify
 from sqlalchemy import select, delete, update
 from .models import LineItem, BudgetCategory, Vendor
-from .utils import get_uploads_path, get_month_timestamps, get_all_months
+from .utils import get_bank_statements_path, get_month_timestamps, get_all_months
 import datetime
 import os
 import openpyxl
@@ -34,15 +34,15 @@ def monthly_budget_summary():
 @app.route('/line_items_by_month')
 def line_items_by_month():
     all_months = get_all_months()
-    files = os.listdir(get_uploads_path())
+    files = os.listdir(get_bank_statements_path())
     return render_template('line_items_by_month.html', 
                            files=files,
                            all_months=all_months)
 
 @app.route('/upload_file/<filename>')
 def upload_file(filename:str):
-    file_path = get_uploads_path() + filename
-    xl = openpyxl.load_workbook(file_path, read_only=True)
+    bank_statement_file_path = get_bank_statements_path() + filename
+    xl = openpyxl.load_workbook(bank_statement_file_path, read_only=True)
     wb = xl.worksheets[0]
     
     items_to_add = []

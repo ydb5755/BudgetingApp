@@ -16,9 +16,9 @@ def get_month_timestamps(month:int, year:int) -> tuple[float, float]:
     last_day_timestamp = datetime.datetime(last_day_of_requested_month.year, last_day_of_requested_month.month, last_day_of_requested_month.day, 23, 59, 59).timestamp()
     return first_day_timestamp, last_day_timestamp
 
-def get_uploads_path() -> str:
-    path1 = 'C:/Users/Lenovo/Desktop/BudgetingApp/app/static/uploadable/'
-    path2 = '/home/yisroel2/Desktop/budgetingApp/app/static/uploadable/'
+def get_bank_statements_path() -> str:
+    path1 = 'C:/Users/Lenovo/Desktop/BudgetingApp/app/static/Bank_Statements/'
+    path2 = '/home/yisroel2/Desktop/budgetingApp/app/static/Bank_Statements/'
     for p in [path1, path2]:
         if os.path.exists(p):
             path = p
