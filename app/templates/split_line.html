@@ -35,6 +35,8 @@
                 <form action="{{ url_for('split_line_endpoint') }}" method="POST">
                     <div class="table-responsive">
                         <table class="table table-bordered">
+                            <input type="hidden" name="parent-id" value="{{li.id}}"/>
+                            <input type="hidden" name="date" value="{{li.date}}"/>
                             <tbody id="table-body">
                                 <tr>
                                     <td><input type="text" class="form-control" name="Amount-1" placeholder="Amount"></td>
