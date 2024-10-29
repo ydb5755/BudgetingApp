@@ -5,7 +5,7 @@
 <main>
     <div class="container mt-5">
         {% if files %}
-            <div class="card">
+            <div class="card mb-3">
                 <div class="card-header bg-primary text-white">
                     File available in static folder for upload - 
                     New files must be formatted with the following columns in this order - Date, Vendor, Note, Confirmation Code, Charge, Deposit
@@ -36,7 +36,35 @@
             </div>
         </div>
         {% endif %}
-        <div class="card">
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                Add Line Item
+            </div>
+            <div class="card-body">
+                
+                <form action="{{ url_for('add_line_item') }}" method="POST">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <tbody id="add-line-item-table">
+                                <tr>
+                                    <td><input type="text" class="form-control" name="ParentId" placeholder="ParentId"></td>
+                                    <td><input type="text" class="form-control" name="Amount" placeholder="Amount"></td>
+                                    <td><input type="text" class="form-control" name="Currency-Type" placeholder="Currency Type"></td>
+                                    <td><input type="text" class="form-control" name="Vendor" placeholder="Vendor"></td>
+                                    <td><input type="text" class="form-control" name="Date" placeholder="Date yyyy-mm-dd"></td>
+                                    <td><input type="text" class="form-control" name="Confirmation Code" placeholder="Confirmation Code"></td>
+                                    <td><input type="text" class="form-control" name="Note" placeholder="Note"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+                
+
+            </div>
+        </div>
+        <div class="card mb-3">
             <div class="card-header bg-primary text-white">
                 Line Items
                 <br/>
@@ -54,7 +82,6 @@
                         <thead>
                             <tr>
                                 <th scope="col">ID</th>
-                                <th scope="col">Parent LineItem ID</th>
                                 <th scope="col">Amount</th>
                                 <th scope="col">Currency Type</th>
                                 <th scope="col">Vendor</th>
@@ -66,6 +93,33 @@
                             </tr>
                         </thead>
                         <tbody id="table-body">
+                            <tr><td>Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card mb-5">
+            <div class="card-header bg-primary text-white">
+                Child Line Items
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Parent LineItem ID</th>
+                                <th scope="col">Amount</th>
+                                <th scope="col">Currency Type</th>
+                                <th scope="col">Vendor</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Confirmation Code</th>
+                                <th scope="col">Note</th>
+                                <th scope="col">Reassign Vendor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="child-table-body">
                             <tr><td>Loading...</td></tr>
                         </tbody>
                     </table>
