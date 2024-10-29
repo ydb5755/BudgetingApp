@@ -134,7 +134,14 @@ def add_line_item():
         )
         db.session.commit()
         return redirect(url_for('line_items_by_month'))
-    
+
+@app.route('/delete_line_item/<id>', methods=['POST'])
+def delete_line_item(id):
+    if request.method == 'POST':
+        db.session.execute(delete(LineItem).where(LineItem.id==id))
+        db.session.commit()
+        return redirect(url_for('line_items_by_month'))
+
 @app.route('/add_vendor', methods=['POST'])
 def add_vendor():
     if request.method == 'POST':

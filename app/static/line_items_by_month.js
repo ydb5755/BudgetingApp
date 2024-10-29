@@ -57,6 +57,7 @@ async function displayMonthLineItems(dateString){
                     <th scope="row">${li.note || ''}</th>
                     <th scope="row"><button id="${li.id}" class="btn btn-primary reassign-button">Click to reassign vendor</button></th>
                     <th scope="row"><a class="btn btn-primary" href="/split_line/${li.id}">Click to split line</a></th>
+                    <th scope="row"><button id="${li.id}" class="btn btn-danger delete-button">Delete</button></th>
                 </tr>
             `;
     
@@ -74,6 +75,7 @@ async function displayMonthLineItems(dateString){
                     <th scope="row">${li.confirmation_code}</th>
                     <th scope="row">${li.note || ''}</th>
                     <th scope="row"><button id="${li.id}" class="btn btn-primary reassign-button">Click to reassign vendor</button></th>
+                    <th scope="row"><button id="${li.id}" class="btn btn-danger delete-button">Delete</button></th>
                 </tr>
             `;
     
@@ -90,6 +92,15 @@ function addListenersToReassignButtons() {
     for(let i = 0; i < reassignButtons.length; i++){
         reassignButtons[i].addEventListener('click', e => {
             startEditMode(parseInt(e.target.id));
+        })
+    }
+}
+
+function addListenersToDeleteButtons() {
+    deleteButtons = document.getElementsByClassName('delete-button');
+    for(let i = 0; i < deleteButtons.length; i++){
+        deleteButtons[i].addEventListener('click', e => {
+            // startEditMode(parseInt(e.target.id));
         })
     }
 }
