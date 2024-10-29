@@ -18,17 +18,16 @@ def budget_categories():
     return render_template('budget_categories.html',
                            budget_categories=budget_categories)
 
-
 @app.route('/vendors')
 def vendors():
     vendors = db.session.execute(select(Vendor)).all()
     return render_template('vendors.html',
                            vendors=vendors)
 
-@app.route('/monthly_budget_summary')
-def monthly_budget_summary():
+@app.route('/budget_monthly_analysis')
+def budget_monthly_analysis():
     all_months = get_all_months()
-    return render_template('monthly_budget_summary.html',
+    return render_template('budget_monthly_analysis.html',
                            all_months=all_months)
 
 @app.route('/line_items_by_month')
@@ -113,6 +112,28 @@ def add_budget_category():
         db.session.commit()
         return redirect(url_for('budget_categories'))
     
+@app.route('/add_line_item', methods=['POST'])
+def add_line_item():
+    if request.method == 'POST':
+        date = datetime.datetime.strptime(request.form['Date'], '%Y-%m-%d').timestamp()
+        vendor = db.session.execute(select(Vendor).where(Vendor.name == request.form['Vendor'])).scalar()
+        if not vendor:
+            db.session.add(Vendor(name=request.form['Vendor']))
+            db.session.commit()
+            vendor = db.session.execute(select(Vendor).where(Vendor.name == request.form['Vendor'])).scalar()
+        db.session.add(
+            LineItem(
+                parent_line_item_id =request.form['ParentId'],
+                amount              =request.form['Amount'],
+                currency_type       =request.form['Currency-Type'],
+                vendor_id           =vendor.id,
+                date                =date,
+                confirmation_code   =request.form['Confirmation Code'],
+                note                =request.form['Note']
+            )
+        )
+        db.session.commit()
+        return redirect(url_for('line_items_by_month'))
     
 @app.route('/add_vendor', methods=['POST'])
 def add_vendor():
@@ -123,6 +144,17 @@ def add_vendor():
         db.session.add(vendor)
         db.session.commit()
         return redirect(url_for('vendors'))
+
+@app.route('/update_vendor/<li_id>/<new_name>', methods=['POST'])
+def update_vendor(li_id, new_name):
+    vendor = db.session.execute(select(Vendor).where(Vendor.name == new_name)).scalar()
+    if not vendor:
+        db.session.add(Vendor(name=new_name))
+        db.session.commit()
+    vendor = db.session.execute(select(Vendor).where(Vendor.name == new_name)).scalar()
+    db.session.execute(update(LineItem).where(LineItem.id==li_id).values(vendor_id=vendor.id))
+    db.session.commit()
+    return {"status":'success'}
 
 @app.route('/delete_budget_category/<id>', methods=['POST'])
 def delete_budget_category(id):
@@ -181,7 +213,51 @@ def update_vendors_budget_category(vendor_id, updated_budget_name):
     
 @app.route('/split_line_endpoint', methods=['POST'])
 def split_line_endpoint():
-    if request.method == 'POST':
-        for k, v in request.form.items():
-            print(f'{k} : {v}')
-        return redirect(url_for('line_items_by_month'))
+    if not request.method == 'POST':
+        return
+    
+    list_of_items = []
+    item_holder = []
+    
+    for i, v in enumerate(request.form.values()):
+        if i == 0:
+            parent_id = v
+        elif i == 1:
+            date = v
+        else:
+            item_holder.append(v)
+            if len(item_holder) == 4:
+                list_of_items.append(item_holder.copy())
+                item_holder.clear()
+    for item in list_of_items:
+        vendor_id = db.session.execute(select(Vendor.id).where(Vendor.name==item[1])).scalar()
+        if not vendor_id:
+            db.session.add(Vendor(name=item[1]))
+            db.session.commit()
+            vendor_id = db.session.execute(select(Vendor.id).where(Vendor.name==item[1])).scalar()
+        db.session.add(LineItem(
+            parent_line_item_id = parent_id,
+            amount = item[0],
+            vendor_id = vendor_id,
+            date = date,
+            confirmation_code = item[2],
+            note = item[3]
+        ))
+    db.session.commit()
+
+
+    return redirect(url_for('line_items_by_month'))
+
+@app.route('/get_budget_details_for_month/<month>/<year>', methods=['POST'])
+def get_budget_details_for_month(month:str, year:str):
+    year = int(year)
+    month_int = datetime.datetime.strptime(month, "%b").month
+    budgets = db.session.execute(select(BudgetCategory)).scalars().all()
+    budget_list = []
+    for budget in budgets:
+        budget_list.append({
+            'id':budget.id,
+            'name':budget.name,
+            'month_cost':budget.get_total_month_cost(month_int, year)
+        })
+    return jsonify(budget_list)
