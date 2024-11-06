@@ -1,5 +1,5 @@
 from app import db
-from sqlalchemy import Column, INTEGER, String, select
+from sqlalchemy import Column, INTEGER, String, select, distinct
 import datetime
 class Vendor(db.Model):
     __tablename__ = 'vendor'
@@ -34,11 +34,16 @@ class BudgetCategory(db.Model):
     def get_total_month_cost(self, month:int, year:int):
         from .utils import get_month_timestamps
         first_ts, last_ts = get_month_timestamps(month, year)
-        lis = self.get_line_items()
+        line_items = self.get_line_items()
+        x = list(db.session.execute(select(distinct(LineItem.parent_line_item_id))).scalars().all())
+        if None in x:
+            x.remove(None)
         requested_month_lis = 0
-        for li in lis:
-            if first_ts < li.date < last_ts:
+        for li in line_items:
+            if first_ts < li.date < last_ts and not li.id in x:
                 requested_month_lis += li.amount
+            elif first_ts < li.date < last_ts:
+                print(li.amount)
         return requested_month_lis
 
     
