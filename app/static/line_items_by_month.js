@@ -85,6 +85,12 @@ async function displayMonthLineItems(dateString){
 
     });
     addListenersToReassignButtons();
+    addListenersToDeleteButtons();
+}
+
+function deleteLineItem(id) {
+    fetch(`/delete_line_item/${id}`, {method:'POST'});
+    document.getElementById(`${id}-row`).remove();
 }
 
 function addListenersToReassignButtons() {
@@ -100,7 +106,7 @@ function addListenersToDeleteButtons() {
     deleteButtons = document.getElementsByClassName('delete-button');
     for(let i = 0; i < deleteButtons.length; i++){
         deleteButtons[i].addEventListener('click', e => {
-            // startEditMode(parseInt(e.target.id));
+            deleteLineItem(parseInt(e.target.id));
         })
     }
 }
