@@ -29,29 +29,35 @@ def process_card(
 ):
     start = None
     end = None
-    lines_to_skip = []
+
     for row_num, row in enumerate(data):
         if row[0] == card:
             if data[row_num + 1][0] == 'אין נתונים להצגה':
                 return None
             start = row_num + 3
             break
-    for row_num, row in enumerate(data[start + 1:]):
-        if row[0] in card_names:
+    for row_num, row in enumerate(data):
+        if row[0] in card_names and row_num > start:
             end = row_num - 2
             break
-    for row_num, row in enumerate(data[start:end]):
-        if row[0] == 'עסקאות בחו˝ל':
-            lines_to_skip = list(range(row_num - 1, row_num + 2))
-            # for chul_line_num, chul_line in enumerate(data[row_num:end]):
-            #     if chul_line[0] == None:
-            #         lines_to_skip.append(chul_line_num)
     if end == None:
         end = len(data)
-        
-    if start and end:
-        new_file_name = name_file(og_file=file, card_num=card_num)
-        build_new_file(new_file_name, data[start:end])
+    chul_flag = False
+    result = []
+    for row_num, row in enumerate(data):
+        if start <= row_num < end:
+            if row[0] == 'עסקאות בחו˝ל':
+                chul_flag = len(result)
+            if not row[0]:
+                continue
+            if chul_flag:
+                result.append([row[5], row[2], ''])
+            else:
+                result.append([row[4], row[1], row[6]])
+    if chul_flag:
+        del result[chul_flag-1:chul_flag+2]
+    new_file_name = name_file(og_file=file, card_num=card_num)
+    build_new_file(new_file_name, result)
     
     return True
 
@@ -70,24 +76,23 @@ def confirm_has_values(rows:list):
         total += int(row[0])
     return True if total > 0 else False
 
-def build_new_file(name_of_new_file:str, list_of_rows:list[str]):
-    new_columns_with_indexes = {'Amount':4, 'Vendor':1, 'Confirmation Code':6}
-    results = []
-    for row in list_of_rows:
-        if row[new_columns_with_indexes['Amount']] == 0:
-            continue
-        relevant_values = []
-        for index in new_columns_with_indexes.values():
-            relevant_values.append(row[index])
-        results.append(relevant_values)
-    if confirm_has_values(relevant_values):
+def build_new_file(name_of_new_file:str, list_of_rows:list[list[str]]):
+    if confirm_has_values(list_of_rows):
         # Convert the list of lists to a DataFrame
-        df = pd.DataFrame(results, columns=['Amount', 'Vendor', 'Confirmation Code'])
+        df = pd.DataFrame(list_of_rows, columns=['Amount', 'Vendor', 'Confirmation Code'])
 
         # Write the DataFrame to an Excel file
         df.to_excel(f'{target_dir}/{name_of_new_file}', index=False)
 
+
+def change_excel_version():
+    files = ['Export_1_2023.xls', 'Export_1_2024.xls']
+    from xls2xlsx import XLS2XLSX
+    for file in files:
+        f_path = f'{work_dir}/{file}'
+        x2x = XLS2XLSX(f_path)
+        x2x.to_xlsx(f'{work_dir}/{file}x')
+
 if __name__ == '__main__':
-    print(list(range(4,6)))
-    # process_file(target_file)
+    process_directory()
     
