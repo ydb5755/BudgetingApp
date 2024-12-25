@@ -27,6 +27,9 @@
                                 <th scope="row">Date:</th>
                                 <td>{{ li.display_date() }}</td>
                             </tr>
+                            <tr>
+                                <th><a class="btn btn-primary" href="{{url_for('import_file_selector', line_item_id=li.id)}}">Import File</a></th>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -37,7 +40,25 @@
                         <table class="table table-bordered">
                             <input type="hidden" name="parent-id" value="{{li.id}}"/>
                             <input type="hidden" name="date" value="{{li.date}}"/>
-                            <tbody id="table-body"></tbody>
+                            <tbody id="table-body">
+                                
+                                {% if existing_child_lines %}
+                                    <tr>
+                                        <th>Amount</th>
+                                        <th>Vendor</th>
+                                        <th>Confirmation Code</th>
+                                        <th>Note</th>
+                                    </tr>
+                                    {% for line in existing_child_lines %}
+                                    <tr>
+                                        <td>{{line.amount}}</td>
+                                        <td>{{line.get_vendor()}}</td>
+                                        <td>{{line.confirmation_code}}</td>
+                                        <td>{{line.note}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            </tbody>
                         </table>
                     </div>
                     <button type="button" class="btn btn-primary" id="add-line-button">Add Another Line?</button>

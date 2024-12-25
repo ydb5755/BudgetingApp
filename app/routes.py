@@ -38,8 +38,8 @@ def line_items_by_month():
                            files=files,
                            all_months=all_months)
 
-@app.route('/upload_file/<filename>')
-def upload_file(filename:str):
+@app.route('/upload_bank_statement/<filename>')
+def upload_bank_statement(filename:str):
     bank_statement_file_path = get_bank_statements_path() + filename
     xl = openpyxl.load_workbook(bank_statement_file_path, read_only=True)
     wb = xl.worksheets[0]
@@ -91,10 +91,64 @@ def upload_file(filename:str):
 
 @app.route('/split_line/<line_item_id>')
 def split_line(line_item_id):
+    existing_child_lines = db.session.execute(select(LineItem).where(LineItem.parent_line_item_id == line_item_id)).scalars()
     li = db.session.execute(select(LineItem).where(LineItem.id == line_item_id)).scalar()
     return render_template('split_line.html',
-                           li=li)
+                           li=li,
+                           existing_child_lines=existing_child_lines)
 
+@app.route('/import_file_selector/<line_item_id>')
+def import_file_selector(line_item_id):
+    li = db.session.execute(select(LineItem).where(LineItem.id == line_item_id)).scalar()
+    files = os.listdir('app\static\Credit_Card_Statements')
+    return render_template('import_file_selector.html',
+                           li=li,
+                           files=files)
+
+@app.route('/upload_file_for_line_split/<file_name>/<line_item_id>')
+def upload_file_for_line_split(file_name, line_item_id):
+    file_path = f'C:/Users/Lenovo/Desktop/BudgetingApp/app/static/Credit_Card_Statements/{file_name}'
+    parent_line_item = db.session.execute(select(LineItem).where(LineItem.id == line_item_id)).scalar()
+    
+    xl = openpyxl.load_workbook(file_path, read_only=True)
+    wb = xl.worksheets[0]
+
+    vendors = db.session.execute(select(Vendor.name)).all()
+    vendors_added = [vendor[0] for vendor in vendors]
+    
+    items_to_add = []
+
+    for line, row in enumerate(wb.rows):
+        row = [x.value for x in row]
+        if line == 0:
+            columns = {x: i for i,x in enumerate(row)}
+            continue
+
+        if not row[columns['Vendor']] in vendors_added:
+            vendors_added.append(row[columns['Vendor']])
+            vendor = Vendor(
+                name=row[columns['Vendor']]
+            )
+            db.session.add(vendor)
+            db.session.commit()
+        vendor_id = db.session.execute(select(Vendor.id).where(Vendor.name==row[columns['Vendor']])).scalar()
+        line_item = LineItem(
+            parent_line_item_id=line_item_id,
+            amount=row[columns['Amount']] * -1,
+            currency_type='shekel',
+            vendor_id=vendor_id,
+            date=parent_line_item.date,
+            confirmation_code=row[columns['Confirmation Code']],
+            note=None
+        )
+        items_to_add.append(line_item)
+    xl.close()
+
+    db.session.add_all(items_to_add)
+    db.session.commit()
+    os.remove(file_path)
+
+    return redirect(url_for('split_line', line_item_id=line_item_id))
 
 
 ###################
